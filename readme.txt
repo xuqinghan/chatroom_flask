@@ -1,4 +1,13 @@
+2016.7.1 更奇葩的bug  不能用中文用户名和房间名登录 持续报WinError 10038
+作者给出的方法
+https://github.com/miguelgrinberg/Flask-SocketIO/issues/234
+其实是connect之后不能立即emit 要延时
+
+
+
+
 2016.5.25 发现这个奇葩bug
+
 socketio必须安装eventlet 否则无法发送接收 Unicode字符，包括用户名
 
 

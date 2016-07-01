@@ -11,18 +11,18 @@
         <title>多人聊天室</title>
         <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}" />
         <!-- 聊天用的 -->
-        <script src="{{url_for('static', filename='js/socketio/socket.io-client/socket.io.js')}}"></script>
+        <script src="{{url_for('static', filename='js/socketio/socket.io-client/socket.io.js')}}" charset="UTF-8"></script>
 
 
-        <script src="{{url_for('static', filename='js/jquery-1.12.0.min.js')}}"></script>
+        <script  type="text/javascript" src="{{url_for('static', filename='js/jquery-1.12.0.min.js')}}" charset="UTF-8" ></script>
 
         <!-- 录音用的 -->
         <!--<script src="{{url_for('static', filename='js/recorderjs/recorder.js')}}"></script>
         <script src="{{url_for('static', filename='js/my_recorder.js')}}"></script>
         -->
-        <script src="{{url_for('static', filename='js/my_recordmp3.js')}}"></script>
+        <script src="{{url_for('static', filename='js/my_recordmp3.js')}}"  charset="UTF-8"></script>
         <script src="{{url_for('static', filename='js/userlist.js')}}"></script>
-        <script type="text/javascript" charset="utf-8">
+        <script type="text/javascript" charset="UTF-8">
 /*            var socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
 
             //告诉服务器端有用户登录
@@ -46,8 +46,9 @@
                 <input type="text" style="width:180px;" placeholder="请输入昵称" id="nickname" name="nickname"  value={{user.nickname}} >
                 <input type="text" style="width:180px;" placeholder="请输入uid" id="uid" name="uid"  value={{user.uid}} >
                 <input type="text" style="width:180px;" placeholder="请输入房间名" id="room" name="room"  value={{user.room}} >
-<!--                 <input type="text" style="width:180px;" placeholder="请输入用户名" id="username" name="username" value ="临时用户">
-                <input type="text" style="width:180px;" placeholder="请输入房间名" id="room" name="room" > -->
+
+<!--                 <input type="text" style="width:180px;" placeholder="请输入用户名" id="username" name="username"/>
+                <input type="text" style="width:180px;" placeholder="请输入房间名" id="room" name="room" /> -->
 
 				<input type="button" style="width:50px;" value="提交" onclick="CHAT.usernameSubmit();" >
 
@@ -94,9 +95,9 @@
                 <br />
                 <div id="user_list">
                     <menu>
-                    <li usrname="张三" uid = 0 onclick="USERLIST.clicked(this)">张三</li>
+<!--                     <li usrname="张三" uid = 0 onclick="USERLIST.clicked(this)">张三</li>
                     <li usrname="李四" uid = 1 onclick="USERLIST.clicked(this)">李四</li>
-                    <li usrname="王五" uid = 2 onclick="USERLIST.clicked(this)">王五</li>
+                    <li usrname="王五" uid = 2 onclick="USERLIST.clicked(this)">王五</li> -->
                     </menu>
                 </div>
             </div>
@@ -107,7 +108,7 @@
         
     </body>
     <!-- 聊天用的逻辑 -->
-    <script type="text/javascript" charset="utf-8" src="{{url_for('static', filename='js/client.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/client.js')}}" charset="UTF-8"></script>
     <script type="text/javascript">
      window.onload=function(){
         //window.document.test.submit();
@@ -115,18 +116,14 @@
         console.log("window onload");
         //alert(d.getElementById("username").value);
 
-        USERLIST.build_dict_local();//建立用户列表
+        //USERLIST.build_dict_local();//建立用户列表
 
-
-        //console.log(document.getElementById("username").value);
         var username = document.getElementById("username").value;
         var nickname = document.getElementById("nickname").value;
         var uid = document.getElementById("uid").value;
         var room = document.getElementById("room").value;
-        //CHAT.usernameSubmit();
         CHAT.build(nickname,uid,room);
-
-        //return;
+        return;
      }
      </script>
 

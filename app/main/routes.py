@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from flask import session, redirect, url_for, render_template, request
 from . import main
 from .forms import LoginForm
@@ -32,7 +33,7 @@ def index_django():
         user = { 'username': '临时用户',
                 'nickname' : '临时用户',
                 'uid' : 0,
-                'room' : '临时房间',
+                'room' : '讨论课题1',
                 }
 
     return render_template('index_django.html',user = user)

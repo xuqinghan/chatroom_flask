@@ -1,8 +1,11 @@
+# -*- coding:utf-8 -*-
 from flask import session
 from flask_socketio import emit, join_room, leave_room
 from .. import socketio
 import uuid
 import json
+import collections
+
 
 class Room():
     #在线用户
@@ -11,6 +14,29 @@ class Room():
     onlineCount = 0
 
 Rooms = {}
+
+
+def create_new_useritem(uid,username):
+    '''建立一个新用户的各个字段'''
+    item = {}
+    item['uid'] = uid
+    item['username'] = username
+    if uid == 0:
+        item['is_adimin'] = True    
+    else:
+        item['is_adimin'] = False
+
+    item['is_emphasized'] = False
+    item['is_silenced'] = False
+    return item
+
+
+def add_fake_useritems(room):
+    '''建立几个假用户用来开发uselist功能'''
+    item = create_new_useritem(uid=1,username='张三')
+    Rooms[room].onlineUsers[1] = item
+    item = create_new_useritem(uid=2,username='李四')
+    Rooms[room].onlineUsers[2] = item
 
 
 
@@ -22,46 +48,66 @@ def test_connect():
 
 @socketio.on('disconnect',namespace='/chat')
 def test_disconnect():
-    username = session['name']
+    print('断开连接')
+    username = session['username']
     room = session['room']
     uid = session['uid']
+
+    user = {'username':username,'room':room,'uid':uid}
+
     if uid in Rooms[room].onlineUsers:
-        Rooms[room].onlineCount -= 1
         Rooms[room].onlineUsers.pop(uid)
+        Rooms[room].onlineCount = len(Rooms[room].onlineUsers)
 
-    print('Client {0} disconnected'.format((username)))
+
+        msg = {'onlineUsers':Rooms[room].onlineUsers, 
+            'onlineCount':Rooms[room].onlineCount,
+            'user':user}
+        leave_room(room)
+        emit('logout', json.dumps(msg, ensure_ascii = False), room=room)    
+        print('用户： {0} 离开了房间：{1}'.format(username,room))
 
 
-#@socketio.on('login')
-@socketio.on('login',namespace='/chat')
+
+@socketio.on('message_login',namespace='/chat')
 def handle_login(user):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
+    print(user)
+    #user = json.loads(user)
+    #print(user)
 
     print(user['username']+' 登录 房间=' + user['room'])
     #print(message)
-
-    session['room'] = user['room']
-    session['uid'] = user['userid']
-    session['name'] = user['username']
+    room = user['room']
+    uid = user['userid']
+    username = user['username']
+    session['room'] = room
+    session['uid'] = uid
+    session['username'] = username
     #print(session)
-    room = session.get('room')
-    uid = session.get('uid')
+
+
 
     if room  not in Rooms:
         Rooms[room] = Room()
 
     if uid not in Rooms[room].onlineUsers:
-        Rooms[room].onlineCount += 1
-        Rooms[room].onlineUsers[uid] = session['name']
+        item = create_new_useritem(uid,username)
+        Rooms[room].onlineUsers[uid] = item
 
-    join_room(room)
-    #print(Rooms[room].onlineUsers)
-    emit('login', {'onlineUsers':Rooms[room].onlineUsers, 'onlineCount':Rooms[room].onlineCount, 'user':user}, room=room)
+        add_fake_useritems(room) # 调试userlist用的
 
 
-    #print(message['room'])
-    #print(message['userid'])
+        Rooms[room].onlineCount = len(Rooms[room].onlineUsers)
+        join_room(room)
+        #print(Rooms[room].onlineUsers)
+        msg = {'onlineUsers':Rooms[room].onlineUsers, 
+            'onlineCount':Rooms[room].onlineCount,
+            'user':user}
+
+        emit('login', json.dumps(msg, ensure_ascii = False), room=room)
+
     
 
 
@@ -72,7 +118,7 @@ def message(message):
     room = session.get('room')
     #print('收到消息')
     #print(session)
-    #print(message)
+    print(Rooms)
     emit('message_txt', message, room=room)
     print(message['username']+'说：'+message['content']);
 
